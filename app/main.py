@@ -149,8 +149,8 @@ def progress_page(request: Request):
 
 # ---- Test routes ----
 @app.get("/")
-def read_root():
-    return {"message": "Learning app backend is running"}
+def read_root(request: Request):
+    return templates.TemplateResponse(request=request, name="login.html")
 
 
 @app.get("/test-db")
