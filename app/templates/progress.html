@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <h2 style="margin-bottom: 0.5rem;">📊 Your Progress</h2>
+    <p>Track your XP and mastery across every lesson.</p>
+
+    <div class="glass-panel" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 id="levelLabel" style="margin-bottom: 0;">Level 1</h3>
+            <span id="xpLabel" style="font-size: 0.85rem; opacity: 0.75;">0 XP total</span>
+        </div>
+        <div class="progress-bar-track" style="margin-top: 0.75rem;">
+            <div class="progress-bar-fill" id="xpProgressFill" style="width: 0%;"></div>
+        </div>
+        <p id="xpToNextText" style="margin-top: 0.5rem; margin-bottom: 0;"></p>
+        <p id="encouragementText" style="margin-top: 0.5rem; margin-bottom: 0; font-style: italic;"></p>
+    </div>
+
+    <div id="progressList" style="display: flex; flex-direction: column; gap: 1rem;">
+        <p>Loading progress...</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProgressOverview();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>G-Zia Learn Space</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <script src="/static/js/main.js" defer></script>
+    <style>
+        .app-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 220px; flex-shrink: 0; padding: 1.5rem 1rem;
+            display: flex; flex-direction: column; gap: 0.25rem;
+            height: 100vh; position: sticky; top: 0;
+            overflow-y: auto; overscroll-behavior: contain;
+        }
+        .sidebar h2 { margin-bottom: 1.5rem; font-size: 1.2rem; }
+        .sidebar a, .sidebar .nav-btn {
+            display: block; padding: 0.6rem 0.8rem; border-radius: 8px;
+            text-decoration: none; color: var(--text-main, inherit);
+            opacity: 0.85; cursor: pointer; font-size: 1rem; background: none; border: none;
+            width: 100%; text-align: left; font-family: inherit; margin: 0; flex-shrink: 0;
+        }
+        .sidebar a:hover, .sidebar .nav-btn:hover { background: rgba(255, 255, 255, 0.08); opacity: 1; }
+        .sidebar .logout-link { margin-top: auto; }
+        .sidebar-history-list {
+            display: none; flex-direction: column; padding-left: 0.5rem;
+            max-height: 140px; overflow-y: auto; margin-bottom: 0.25rem;
+            overscroll-behavior: contain; scrollbar-width: thin; flex-shrink: 0;
+        }
+        .sidebar-history-list.open { display: flex; }
+        .sidebar-history-list::-webkit-scrollbar { width: 4px; }
+        .sidebar-history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .sidebar-history-item {
+            padding: 0.5rem 0.7rem; border-radius: 6px; cursor: pointer;
+            font-size: 0.85rem; opacity: 0.75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .sidebar-history-item:hover { background: rgba(255,255,255,0.08); opacity: 1; }
+        .main-area { flex: 1; padding: 1.5rem; height: 100vh; overflow-y: auto; overscroll-behavior: contain; }
+        .menu-toggle { display: none; }
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex; position: fixed; top: 1rem; left: 1rem; z-index: 100;
+                width: 44px; height: 44px; border-radius: 12px; align-items: center;
+                justify-content: center; font-size: 1.4rem; cursor: pointer;
+                background: rgba(15, 12, 28, 0.85); backdrop-filter: blur(12px);
+                border: 1px solid var(--glass-border);
+            }
+            .app-layout { flex-direction: column; }
+            .sidebar {
+                position: fixed; top: 0; left: -280px; height: 100vh; width: 240px;
+                z-index: 99; border-radius: 0; transition: left 0.25s ease; padding-top: 4.5rem;
+                overflow-y: auto; display: flex; flex-direction: column;
+            }
+            .sidebar.open { left: 0; }
+            .main-area { height: auto; min-height: 100vh; padding-top: 4.5rem; }
+            .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 98; }
+            .sidebar-backdrop.open { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <div class="rgb-glow-orb orb-1"></div>
+    <div class="rgb-glow-orb orb-2"></div>
+    <div class="rgb-glow-orb orb-3"></div>
+
+    <div class="menu-toggle" id="menuToggle">☰</div>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="app-layout">
+        <nav class="sidebar glass-panel" id="sidebar">
+            <h2>📚 G-Zia</h2>
+            <a href="/dashboard">🏠 Dashboard</a>
+            <a href="/timetable">🗓️ Timetable</a>
+            <a href="/chat">💬 Chat</a>
+            <a href="/progress">📊 Progress</a>
+            <button class="nav-btn" id="historyToggleBtn" type="button">🕓 History ▾</button>
+            <div class="sidebar-history-list" id="sidebarHistoryList"></div>
+          <a href="#" onclick="handleLogout(event)" class="logout-link">🚪 Logout</a>
+        </nav>
+
+        <main class="main-area container" id="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (toggle && sidebar && backdrop) {
+                toggle.onclick = () => { sidebar.classList.toggle('open'); backdrop.classList.toggle('open'); };
+                backdrop.onclick = () => { sidebar.classList.remove('open'); backdrop.classList.remove('open'); };
+            }
+
+            const historyBtn = document.getElementById('historyToggleBtn');
+            const historyList = document.getElementById('sidebarHistoryList');
+            if (historyBtn && historyList) {
+                historyBtn.onclick = async () => {
+                    const isOpen = historyList.classList.toggle('open');
+                    if (isOpen && !historyList.dataset.loaded) {
+                        historyList.innerHTML = '<p style="opacity:0.6; font-size:0.8rem; padding: 0.4rem 0.7rem;">Loading...</p>';
+                        try {
+                            const res = await fetch('/chats');
+                            const chats = await res.json();
+                            historyList.innerHTML = '';
+                            if (chats.length === 0) {
+                                historyList.innerHTML = '<p style="opacity:0.6; font-size:0.8rem; padding: 0.4rem 0.7rem;">No chats yet.</p>';
+                            } else {
+                                chats.forEach(chat => {
+                                    const div = document.createElement('div');
+                                    div.className = 'sidebar-history-item';
+                                    div.textContent = chat.title;
+                                    div.onclick = () => window.location.href = `/chat?session_id=${chat.id}`;
+                                    historyList.appendChild(div);
+                                });
+                            }
+                            historyList.dataset.loaded = '1';
+                        } catch (e) {
+                            historyList.innerHTML = '<p style="opacity:0.6; font-size:0.8rem; padding: 0.4rem 0.7rem;">Failed to load.</p>';
+                        }
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html>

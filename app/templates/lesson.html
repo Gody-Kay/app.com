@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <a href="javascript:history.back()" style="display: inline-block; margin-bottom: 1rem;">← Back to Subject</a>
+    
+    <div class="glass-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <h2 id="lessonTitle" style="margin-bottom: 0;">Loading...</h2>
+            <span id="completedBadge" style="display: none; font-size: 0.85rem; padding: 0.3rem 0.7rem; border-radius: 20px; background: rgba(74, 222, 128, 0.2); color: #4ade80; white-space: nowrap;">✓ Completed</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 1rem 0;">
+        <div id="lessonContent" style="line-height: 1.7; font-size: 1.05rem;">
+            <p>Fetching lesson...</p>
+        </div>
+        <div style="margin-top: 1.5rem; text-align: center;">
+            <button id="markCompleteBtn" style="width: auto; padding: 0.75rem 1.5rem;">✓ Mark as Complete</button>
+        </div>
+        <div class="lesson-chat-cta">
+            <button id="askQuestionBtn" style="width: auto; padding: 0.75rem 1.5rem;">💬 Ask a question about this lesson</button>
+        </div>
+    </div>
+
+    <div class="glass-panel" style="margin-top: 1.5rem;">
+        <h3 style="margin-bottom: 0.75rem;">🧠 Test Yourself</h3>
+        <p style="margin-bottom: 1rem;">Pick a difficulty to generate a quiz on this lesson.</p>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button id="quizEasyBtn" style="width: auto; flex: 1; min-width: 100px;">🟢 Easy</button>
+            <button id="quizMediumBtn" style="width: auto; flex: 1; min-width: 100px;">🟡 Medium</button>
+            <button id="quizHardBtn" style="width: auto; flex: 1; min-width: 100px;">🔴 Hard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSingleLesson();
+        const urlParams = new URLSearchParams(window.location.search);
+        const lessonId = urlParams.get('id');
+
+        const askBtn = document.getElementById('askQuestionBtn');
+        if (askBtn && lessonId) askBtn.onclick = () => window.location.href = `/chat?lesson_id=${lessonId}`;
+
+        ['Easy', 'Medium', 'Hard'].forEach(level => {
+            const btn = document.getElementById(`quiz${level}Btn`);
+            if (btn && lessonId) btn.onclick = () => generateQuiz(lessonId, level.toLowerCase(), btn);
+        });
+
+        const completeBtn = document.getElementById('markCompleteBtn');
+        if (completeBtn && lessonId) completeBtn.onclick = () => markLessonComplete(lessonId);
+    });
+</script>
+{% endblock %}

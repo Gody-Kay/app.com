@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="chat-layout">
+    <div class="chat-main">
+        <div id="chatMessages" class="chat-messages">
+            <div class="chat-empty-state">
+                <h3>👋 Ask me anything</h3>
+                <p>I can help explain concepts, answer questions, or work through problems with you.</p>
+            </div>
+        </div>
+        <div class="attachment-preview" id="attachmentPreview">
+            <span id="attachmentPreviewName"></span>
+            <span class="remove-attachment" onclick="clearPendingAttachment()">✕</span>
+        </div>
+        <form id="chatInputForm" onsubmit="sendChatMessage(event)" class="chat-input-bar">
+            <button type="button" class="attach-btn" onclick="document.getElementById('fileInput').click()">+</button>
+            <input type="file" id="fileInput" style="display: none;" accept="image/*,.pdf,.doc,.docx">
+            <input type="text" id="chatTextInput" placeholder="Ask a question..." autocomplete="off">
+            <button type="submit" class="send-btn">➤</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initChatPage();
+    });
+</script>
+{% endblock %}

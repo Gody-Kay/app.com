@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <h2 style="margin-bottom: 0.5rem;">Your Timetable</h2>
+    <p>Plan your lesson periods for the week.</p>
+    <div id="timetableGrid" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <p>Loading timetable...</p>
+    </div>
+    <div class="glass-panel" style="margin-top: 2rem; border-style: dashed;">
+        <h3 style="margin-bottom: 0.5rem;">Add a Study Period</h3>
+        <form onsubmit="createTimetableEntry(event)">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" required placeholder="e.g., Algebra practice">
+            </div>
+            <div class="form-group">
+                <label>Day</label>
+                <select name="day_of_week" required>
+                    <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+                    <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+                </select>
+            </div>
+            <div class="form-group" style="display: flex; gap: 1rem;">
+                <div style="flex: 1;">
+                    <label>Start Time</label>
+                    <input type="time" name="start_time" required>
+                </div>
+                <div style="flex: 1;">
+                    <label>End Time</label>
+                    <input type="time" name="end_time" required>
+                </div>
+            </div>
+            <button type="submit">Add to Timetable</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTimetable();
+    });
+</script>
+{% endblock %}

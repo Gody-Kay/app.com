@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <a href="javascript:history.back()" style="display: inline-block; margin-bottom: 1rem;">← Back</a>
+    <div id="quizContainer" class="glass-panel">
+        <p>Loading quiz...</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadQuiz();
+    });
+</script>
+{% endblock %}

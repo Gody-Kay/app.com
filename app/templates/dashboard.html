@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <h2 style="margin-bottom: 0.5rem;">Hi, <span id="userName">Student</span> 👋</h2>
+    <p>Here are your subjects.</p>
+
+    <div id="inProgressSection" style="margin-top: 1.5rem; display: none;">
+        <h3 style="margin-bottom: 0.5rem;">📖 Continue Where You Left Off</h3>
+        <div id="inProgressGrid" class="subject-grid"></div>
+    </div>
+
+    <div id="recentLessonsSection" style="margin-top: 1.5rem;">
+        <h3 style="margin-bottom: 0.5rem;">Recent Lessons</h3>
+        <div id="recentLessonsGrid" class="subject-grid">
+            <p>Loading recent lessons...</p>
+        </div>
+    </div>
+
+    <h3 style="margin-top: 2rem; margin-bottom: 0.5rem;">Your Subjects</h3>
+    <div id="subjectGrid" class="subject-grid">
+        <p>Loading subjects...</p>
+    </div>
+
+    <div class="glass-panel" style="margin-top: 2rem; border-style: dashed;">
+        <form onsubmit="createSubject(event)" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                <label>Add New Subject</label>
+                <input type="text" id="newSubjectName" required placeholder="e.g., Biology, Python, History">
+            </div>
+            <button type="submit" style="width: auto; margin-top: 0; padding: 0.75rem 1.5rem;">Add</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSubjects();
+        loadRecentLessons();
+        loadInProgressLessons();
+    });
+</script>
+{% endblock %}
